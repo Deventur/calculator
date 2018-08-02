@@ -15,7 +15,6 @@ class Calculator {
      * @param expression Входная строка
      * @return Выходная строка в обратной польской нотации
      */
-    //TODO Эта тварь где-то не добавляет пробелы... вот ведь!
     String converToRPN(String expression) throws Exception {
 
         char curChar;   //текущий символ из выражения
@@ -129,6 +128,7 @@ class Calculator {
      * @return boolean ответ
      */
     private boolean isOperator(char c) {
+
         switch (c) {
             case '-':
             case '+':
@@ -202,11 +202,10 @@ class Calculator {
                         default:
                             throw new Exception("Недопустимая операция " + tmpElem);
                     }
-                    stack.push(op1);
                 } else {
                     op1 = Double.parseDouble(tmpElem);
-                    stack.push(op1);
                 }
+                stack.push(op1);
             } catch (Exception e) {
                 throw new Exception("Недопустимый символ в выражении");
             }
