@@ -15,7 +15,7 @@ class Calculator {
      * @param expression Входная строка
      * @return Выходная строка в обратной польской нотации
      */
-    String converToRPN(String expression) throws Exception {
+    String converToRPN(String expression) throws RuntimeException {
 
         char curChar;   //текущий символ из выражения
 
@@ -31,7 +31,7 @@ class Calculator {
 
                 processingBrackets(curChar);
 
-            } else if (Character.isDigit(curChar)){
+            } else if (Character.isDigit(curChar)) {
 
                 processingDigits(curChar);
 
@@ -47,10 +47,10 @@ class Calculator {
         return expressionRPN.toString();
     }
 
-    private void processingDigits(char digit){
+    private void processingDigits(char digit) {
         if ((expressionRPN.length() == 0) ||
                 (Character.isDigit(expressionRPN.substring(expressionRPN.length() - 1).charAt(0))) ||
-                (Character.isWhitespace(expressionRPN.substring(expressionRPN.length() - 1).charAt(0)))){
+                (Character.isWhitespace(expressionRPN.substring(expressionRPN.length() - 1).charAt(0)))) {
 
             expressionRPN.append(digit);
 
@@ -59,22 +59,22 @@ class Calculator {
         }
     }
 
-    private void processingBrackets(char bracket) throws Exception {
+    private void processingBrackets(char bracket) throws RuntimeException {
 
         char cTmp; //временный буфер для операторов из стека
 
-        if('('==bracket){
+        if ('(' == bracket) {
 
             stackOpertators.append(bracket);
 
-        } else if(')'==bracket){
+        } else if (')' == bracket) {
 
             cTmp = stackOpertators.substring(stackOpertators.length() - 1).charAt(0);
 
             while ('(' != cTmp) {
 
                 if (stackOpertators.length() < 1) {
-                    throw new Exception("Ошибка разбора скобок. Проверьте правильность выражения.");
+                    throw new RuntimeException("Ошибка разбора скобок. Проверьте правильность выражения.");
                 }
 
                 //HACK
@@ -94,7 +94,7 @@ class Calculator {
 
     }
 
-    private void processingOerators(char operator){
+    private void processingOerators(char operator) {
         char cTmp; //временный буфер для операторов из стека
         if (isOperator(operator)) {
 
@@ -114,7 +114,7 @@ class Calculator {
 
                 }
             }
-            if (!Character.isWhitespace(expressionRPN.substring(expressionRPN.length() - 1).charAt(0))){
+            if (!Character.isWhitespace(expressionRPN.substring(expressionRPN.length() - 1).charAt(0))) {
                 expressionRPN.append(" ");
             }
 
@@ -124,6 +124,7 @@ class Calculator {
 
     /**
      * Функция проверяет, является ли текущий символ оператором
+     *
      * @param c - проверяемый символ.
      * @return boolean ответ
      */
@@ -142,6 +143,7 @@ class Calculator {
 
     /**
      * Возвращает приоритет операции
+     *
      * @param operator char
      * @return byte
      */
@@ -159,10 +161,11 @@ class Calculator {
 
     /**
      * Считает выражение
+     *
      * @param expressin выражение для вычисления
      * @return double result
      */
-    double calculate(String expressin) throws Exception {
+    double calculate(String expressin) throws RuntimeException {
 
         //Запишем входное выражение в обрутной польской нотации
         String expressionRPN = converToRPN(expressin);
@@ -171,12 +174,12 @@ class Calculator {
         String tmpElem;
         Deque<Double> stack = new ArrayDeque<>();
         StringTokenizer stringTokenizer = new StringTokenizer(expressionRPN);
-        while(stringTokenizer.hasMoreTokens()) {
+        while (stringTokenizer.hasMoreTokens()) {
             try {
                 tmpElem = stringTokenizer.nextToken().trim();
                 if (1 == tmpElem.length() && isOperator(tmpElem.charAt(0))) {
                     if (stack.size() < 2) {
-                        throw new Exception("Неверное количество данных в стеке для операции " + tmpElem);
+                        throw new IllegalArgumentException("Неверное количество данных в стеке для операции " + tmpElem);
                     }
                     op2 = stack.pop();
                     op1 = stack.pop();
@@ -200,19 +203,19 @@ class Calculator {
                             op1 = Math.pow(op1, op2);
                             break;
                         default:
-                            throw new Exception("Недопустимая операция " + tmpElem);
+                            throw new RuntimeException("Недопустимая операция " + tmpElem);
                     }
                 } else {
                     op1 = Double.parseDouble(tmpElem);
                 }
                 stack.push(op1);
             } catch (Exception e) {
-                throw new Exception("Недопустимый символ в выражении");
+                throw new IllegalArgumentException("Недопустимый символ в выражении");
             }
         }
 
         if (stack.size() > 1) {
-            throw new Exception("Количество операторов не соответствует количеству операндов");
+            throw new IllegalArgumentException("Количество операторов не соответствует количеству операндов");
         }
 
         return stack.pop();
